@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    volumes:
+      - .:/var/www
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+    env_file:
+      - .env
+
+  webserver:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "9000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: password
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
