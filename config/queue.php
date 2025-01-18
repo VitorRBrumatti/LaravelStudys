@@ -72,6 +72,20 @@ return [
             'after_commit' => false,
         ],
 
+        'rabbitmq' => [
+            'driver' => 'rabbitmq',
+            'host' => env('RABBITMQ_HOST'),
+            'port' => env('RABBITMQ_PORT'),
+            'user' => env('RABBITMQ_USER'),
+            'password' => env('RABBITMQ_PASSWORD'),
+            'vhost' => env('RABBITMQ_VHOST'),
+            'queue' => 'emails',  // Nome da fila
+            'exchange' => env('RABBITMQ_EXCHANGE', 'emails'),
+            'route' => env('RABBITMQ_ROUTE', 'emails'),
+            'retry_after' => 90,
+            'after_commit' => false,
+        ],
+
     ],
 
     /*
