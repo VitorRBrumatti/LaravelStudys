@@ -1,38 +1,53 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers\Auth;
 
-use App\Domain\DTOs\UserDTO;
-use App\Domain\Jobs\SendWelcomeEmailJob;
-use App\Domain\Services\UserService;
 use App\Http\Controllers\Controller;
+use Domain\Auth\Contracts\RegisterUserContract;
+use Domain\Auth\DTOs\RegisterUserDTO;
+use Domain\Shared\Helpers\APIResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-    private UserService $userService;
+  public function __construct(
+    protected readonly RegisterUserContract $registerUserContract
+  ){}
 
-    public function __construct(UserService $userService)
-    {
-        $this->userService = $userService;
+  public function exec(Request $request) : JsonResponse
+  {
+    try {
+      $validation = Validator::make($request->input(), [
+        'name' => 'required|string',
+        'email' => 'required|email|unique:users,email',
+        'cellphone' => 'required|number',
+        'password' => 'required|string|confirmed',
+      ]);
+
+
+      if($validation->fails()){
+          return APIResponse::unprocessableEntity($validation->errors());
+      }
+
+      return APIResponse::success($this->registerUserContract->exec(new RegisterUserDTO(
+        name: $request->input('name'),
+        email: $request->input('email'),
+        cellphone: $request->input('cellphone'),
+        password: $request->input('password'),
+      )));
+
+    } catch (\Exception $e) {
+      Log::error(__CLASS__, [
+        'message'       => $e->getMessage(),
+        'trace'         => $e->getTrace()
+      ]);
+
+      return APIResponse::internalServerError([
+        'error' => 'error to register user'
+      ]);
     }
-
-    public function register(Request $request)
-    {
-        // Validação
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:8',
-        ]);
-
-        // Criação do DTO
-        $userDTO = new UserDTO($validated['name'], $validated['email']);
-
-        // Registra o usuário e dispara o Job para enviar o e-mail
-        $user = $this->userService->registerUser($userDTO);
-        SendWelcomeEmailJob::dispatch($userDTO);
-
-        return response()->json(['message' => 'Cadastro realizado com sucesso!'], 201);
-    }
+  }
 }
