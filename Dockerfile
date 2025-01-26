@@ -31,6 +31,9 @@ WORKDIR /var/www
 RUN usermod -u 1000 www-data
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
+# Rodar o composer install
+RUN composer install --no-dev --optimize-autoloader
+
 # Expor a porta do PHP
 EXPOSE 9000
 

@@ -79,7 +79,7 @@ return [
             'user' => env('RABBITMQ_USER'),
             'password' => env('RABBITMQ_PASSWORD'),
             'vhost' => env('RABBITMQ_VHOST'),
-            'queue' => 'emails',  // Nome da fila
+            'queue' => env('RABBITMQ_QUEUE', 'default'),
             'exchange' => env('RABBITMQ_EXCHANGE', 'emails'),
             'route' => env('RABBITMQ_ROUTE', 'emails'),
             'retry_after' => 90,

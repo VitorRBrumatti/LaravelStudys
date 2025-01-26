@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use Domain\Auth\Contracts\RegisterUserContract;
+use Domain\Auth\Contracts\UserRepositoryContract;
+use Domain\Auth\Repositories\UserRepository;
 use Domain\Auth\Services\RegisterUser;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Foundation\MaintenanceMode;
+use Illuminate\Foundation\MaintenanceModeManager as FoundationMaintenanceModeManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(UserRepositoryContract::class, UserRepository::class);
         $this->app->bind(RegisterUserContract::class, RegisterUser::class);
+        $this->app->bind(MaintenanceMode::class, FoundationMaintenanceModeManager::class);
     }
 
     /**
@@ -21,6 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+
     }
 }

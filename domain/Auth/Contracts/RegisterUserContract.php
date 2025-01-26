@@ -8,5 +8,5 @@ use Domain\Auth\DTOs\RegisterUserDTO;
 
 interface RegisterUserContract
 {
-    public function exec(RegisterUserDTO $input);
+    public function exec(RegisterUserDTO $input) : array;
 }
