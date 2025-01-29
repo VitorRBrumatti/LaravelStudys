@@ -14,6 +14,8 @@ services:
       - rabbitmq
     env_file:
       - .env
+    networks:
+      - app-network
 
   webserver:
     image: nginx:alpine
@@ -25,6 +27,8 @@ services:
       - .:/var/www
     depends_on:
       - app
+    networks:
+      - app-network
 
   mysql:
     image: mysql:8.0
@@ -34,18 +38,41 @@ services:
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel
       MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
 
   redis:
     image: redis:alpine
     container_name: redis
+    networks:
+      - app-network
 
   rabbitmq:
     image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
-    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
 
+  smtp:
+    image: instrumentisto/postfix
+    container_name: smtp-server
+    environment:
+      - MAIL_DOMAIN=example.com  
+      - SMTP_USER=username:password  
+    ports:
+      - "25:25"
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
