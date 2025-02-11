@@ -12,10 +12,12 @@ final class APIResponse
 
     private static function generateResponse(string $status, array|string $messages, int $statusCode): JsonResponse
     {
-        return response()->json([
-            'status'   => $status,
-            'messages' => is_string($messages) ? json_decode($messages, true) : $messages
-        ], $statusCode);
+        return response()->json(
+            is_array($messages) 
+                ? array_merge(['status' => $status], $messages)
+                : ['status' => $status, 'messages' => $messages], 
+            $statusCode
+        );
     }
 
     public static function success(array|string $messages): JsonResponse

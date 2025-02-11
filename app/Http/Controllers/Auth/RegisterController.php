@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -43,15 +44,16 @@ class RegisterController extends Controller
 
       $this->registerUserContract->exec($user);
 
-      SendRegistrationEmailJob::dispatch($user);
-      // Mail::to($user->email)->send(new WelcomeEmail([
-      //   'name' => $user->name,
-      //   'email' => $user->email,
-      //   'cellphone' => $user->cellphone,
-      //   'password' => $user->password
-      // ]));
+      $codigo = random_int(100000, 999999);
+      $key = "two-factor:{$user->email}";
+      Redis::set($key, $codigo, 'EX', 600);
 
-      return APIResponse::success('User registered successfully.');
+      SendRegistrationEmailJob::dispatch($user, $codigo);
+
+      return APIResponse::success([
+          'messages' => 'User registered successfully.',
+          'user' => $user
+      ]);      
 
     } catch (\Exception $e) {
       Log::error('Error in user registration', [

@@ -14,4 +14,22 @@ class UserRepository extends BaseRepository implements UserRepositoryContract
         $this->modelClass = User::class;
         parent::__construct();
     }
+
+        /**
+     * Busca um usuário pelo e-mail.
+     */
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
+
+    /**
+     * Marca o usuário como verificado.
+     */
+    public function markAsVerified(User $user): bool
+    {
+        $user->email_verified_at = now();
+        return $user->save();
+    }
+
 }
