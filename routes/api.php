@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TestController;
-use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\Auth\VerificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [RegisterController::class, 'exec']);

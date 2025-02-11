@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Contracts;
+declare(strict_types=1);
 
-use App\DTOs\VerifyUserDTO;
+namespace Domain\Auth\Contracts;
+
+use Domain\Auth\DTOs\VerifyUserDTO;
 
 interface VerifyUserContract
 {

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Services;
+declare(strict_types=1);
 
-use App\Contracts\VerifyUserContract;
-use App\DTOs\VerifyUserDTO;
+namespace Domain\Auth\Services;
+
+use Domain\Auth\Contracts\VerifyUserContract;
+use Domain\Auth\DTOs\VerifyUserDTO;
 use Domain\Auth\Repositories\UserRepository;
 use Illuminate\Support\Facades\Redis;
 use Exception;
